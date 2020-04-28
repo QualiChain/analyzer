@@ -2,6 +2,7 @@ import logging
 import sys
 
 from app.app import app
+from settings import API_PORT
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
