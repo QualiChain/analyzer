@@ -1,12 +1,13 @@
 import logging
 import sys
 
-from flask import Flask
-from flask_restful import Api
+from app.app import app
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
 log = logging.getLogger(__name__)
 
-app = Flask(__name__)
-api = Api(app)
+if __name__ == '__main__':
+    log.info("Starting AnalEyeZer")
+    app.run(host='0.0.0.0', port=API_PORT, debug=True)
