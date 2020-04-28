@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 
-engine = create_engine('postgresql://admin:admin@qualichain.epu.ntua.gr:5432/api_db')
+engine = create_engine("mariadb://root@localhost:3306")
 # connection = engine.connect()
 
 print(engine.table_names())

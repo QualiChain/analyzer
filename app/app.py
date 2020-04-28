@@ -1,7 +1,8 @@
 import logging
 import sys
 
-from flask import Flask, request, jsonify
+import pandas as pd
+from flask import Flask, request
 from flask_restful import Api, Resource
 
 from utils import check_input_data, check_source
@@ -45,5 +46,14 @@ class ReceiveDataSource(Resource):
             return response_msg, 400
 
 
+class ReceiveCSVFiles(Resource):
+
+    def post(self):
+        file = request.files['file']
+        data = pd.read_csv(file, header=None)
+        print(data.iloc[0].loc[1])
+
+
 # Routes
 api.add_resource(ReceiveDataSource, '/receive/source')
+api.add_resource(ReceiveCSVFiles, '/upload/csv')
