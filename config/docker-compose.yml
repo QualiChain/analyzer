@@ -1,0 +1,45 @@
+version: '3.4'
+
+volumes:
+  data01:
+    driver: local
+
+networks:
+  analeyezer:
+    driver: bridge
+
+services:
+
+  es01:
+    image: ${ELASTICSEARCH_IMAGE}
+    hostname: ${ELASTICSEARCH_HOSTNAME}
+    container_name: ${ELASTICSEARCH_HOSTNAME}
+    restart: always
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    environment:
+      - cluster.initial_master_nodes=${ELASTICSEARCH_HOSTNAME}
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    networks:
+      analeyezer:
+    ports:
+      - ${ELASTICSEARCH_PORT}:9200
+
+  kibana:
+    image: ${KIBANA_IMAGE}
+    container_name: ${KIBANA_HOSTNAME}
+    hostname: ${KIBANA_HOSTNAME}
+    restart: always
+    environment:
+      - ELASTICSEARCH_HOSTS=http://${ELASTICSEARCH_HOSTNAME}:9200
+    networks:
+      - analeyezer
+    ports:
+      - ${KIBANA_PORT}:5601
+    depends_on:
+      - es01
