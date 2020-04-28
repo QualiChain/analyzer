@@ -1,8 +1,10 @@
 import logging
 import sys
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
+
+from utils import check_input_data
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -22,6 +24,14 @@ class ReceiveDataSource(Resource):
 
         data = request.get_json()
 
+        data_format = check_input_data(data)
+        if data_format:
+            log.info('Data Formatted correctly')
+            return 201
+        else:
+            log.error('Data malformed')
+            response_msg = {'message': 'Your input must contain uri, data source type and part'}
+            return response_msg, 400
 
 
 # Routes
