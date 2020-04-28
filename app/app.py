@@ -27,6 +27,7 @@ class ReceiveDataSource(Resource):
         data_format = check_input_data(data)
         if data_format:
             log.info('Data Formatted correctly')
+
             return 201
         else:
             log.error('Data malformed')
