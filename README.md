@@ -5,6 +5,8 @@ AnalEyeZer is a component used in Qualichain H2020
 ### Supported Data Sources
 + RDBMS
     + PostgreSQL
++ NoSQL
+    + MongoDB
 + Files
   + CSV
   + TSV
@@ -18,7 +20,7 @@ AnalEyeZer is a component used in Qualichain H2020
 ### Run AnalEyeZer locally
 
 
-+ `pip insta -r requirements.txt`
++ `pip install -r requirements.txt`
 + `flask run`
 
 ### Examples

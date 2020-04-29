@@ -44,7 +44,8 @@ class MongoDBConnector(object):
 
         """
 
-        collection_data = self.collection.find()
+        collection_data = self.collection.find({}, {'_id': 0})
         data_list = list(collection_data)
+
         data = pd.DataFrame(data_list)
         return data
