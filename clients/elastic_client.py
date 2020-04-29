@@ -23,5 +23,10 @@ class ElasticClient(object):
         Returns: None
 
         """
-        print(index)
-        print(kwargs)
+        index_properties = kwargs
+
+        index_body = {
+            "mappings": index_properties
+        }
+        print(index_body)
+        self.es_obj.indices.create(index=index, body=index_body, ignore=400)

@@ -73,15 +73,15 @@ def map_dtype_to_elk_type(df_type):
 
     """
     if df_type == np.int64:
-        return_type = 'integer'
+        return_type = {'type': 'integer'}
     elif df_type == np.float64:
-        return_type = 'float'
+        return_type = {'type': 'float'}
     elif df_type == np.object:
-        return_type = 'text'
+        return_type = {'type': 'text'}
     elif df_type == np.bool:
-        return_type = 'text'
+        return_type = {'type': 'boolean'}
     elif df_type == np.datetime:
-        return_type = 'date'
+        return_type = {'type': 'date'}
     return return_type
 
 
@@ -97,5 +97,5 @@ def df_lookup(data_frame):
     """
     data_frame_types = data_frame.dtypes
     type_items = data_frame_types.items()
-    transformed_types = dict(map(lambda element: (element[0], {'type': map_dtype_to_elk_type(element[1])}), type_items))
+    transformed_types = dict(map(lambda element: (element[0], map_dtype_to_elk_type(element[1])), type_items))
     return transformed_types

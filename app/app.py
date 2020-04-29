@@ -5,6 +5,7 @@ import pandas as pd
 from flask import Flask, request
 from flask_restful import Api, Resource
 
+from clients.elastic_client import ElasticClient
 from clients.rdbms_client import RDBMSClient
 from utils import check_input_data, check_source, df_lookup
 
@@ -44,6 +45,8 @@ class ReceiveDataSource(Resource):
                 table_df = rdbms.load_table(data['part'])
                 input_types = df_lookup(table_df)
                 print(input_types)
+                es = ElasticClient()
+                es.create_index(index='my_index', properties = input_types)
 
                 return response_msg, 201
             else:
