@@ -97,5 +97,5 @@ def df_lookup(data_frame):
     """
     data_frame_types = data_frame.dtypes
     type_items = data_frame_types.items()
-    transformed_types = dict(map(lambda element: (element[0], map_dtype_to_elk_type(element[1])), type_items))
+    transformed_types = dict(map(lambda element: (element[0], {'type': map_dtype_to_elk_type(element[1])}), type_items))
     return transformed_types

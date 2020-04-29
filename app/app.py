@@ -6,7 +6,7 @@ from flask import Flask, request
 from flask_restful import Api, Resource
 
 from clients.rdbms_client import RDBMSClient
-from utils import check_input_data, check_source
+from utils import check_input_data, check_source, df_lookup
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -38,9 +38,12 @@ class ReceiveDataSource(Resource):
             if _check:
                 response_msg = {'message': 'Data Source send for processing'}
 
+                ## test, later in async way
+
                 rdbms = RDBMSClient(data['uri'])
                 table_df = rdbms.load_table(data['part'])
-                print(table_df.dtypes)
+                input_types = df_lookup(table_df)
+                print(input_types)
 
                 return response_msg, 201
             else:
