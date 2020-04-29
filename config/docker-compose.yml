@@ -44,12 +44,3 @@ services:
     depends_on:
       - es01
 
-  mongodb:
-    image: 'bitnami/mongodb:4.0'
-    ports:
-    - 27017:27017
-    environment:
-      - MONGODB_USERNAME=my_user
-      - MONGODB_PASSWORD=password123
-      - MONGODB_DATABASE=my_database
-
