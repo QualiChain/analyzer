@@ -2,7 +2,7 @@ import numpy as np
 from sqlalchemy import create_engine
 
 from clients.elastic_client import ElasticClient
-from settings import RDBMS_TYPES
+from clients.rdbms_client import RDBMSClient
 
 
 def check_input_data(data):
@@ -42,26 +42,6 @@ def rdbms_check_if_uri_is_valid(input_uri, part):
             return False
     except Exception as ex:
         return False
-
-
-def check_source(input_uri, type, part):
-    """
-    This function is used to check if provided source is valid
-    Args:
-        input_uri: provided uri
-        type: RDBMS type or NoSQL
-        part: table or collection
-
-    Returns: True / False
-
-    """
-
-    if type in RDBMS_TYPES:
-        _check = rdbms_check_if_uri_is_valid(input_uri, part)
-    else:
-        # TBD
-        _check = False
-    return _check
 
 
 def map_dtype_to_elk_type(df_type):
@@ -124,4 +104,18 @@ def test_pipeline(file_df, index2use):
     es = ElasticClient()
     es.create_index(index=index2use, properties=input_types)
     es.insert_source_data(csv_without_nan, index2use)
+    ##
+
+
+def test_rdbms_pipeline(input_uri, part, index2use):
+    ## for testing purposes , later in async way
+
+    rdbms = RDBMSClient(input_uri)
+    table_df = rdbms.load_table(part)
+    input_types = df_lookup(table_df)
+
+    es = ElasticClient()
+    es.create_index(index=index2use, properties=input_types)
+
+    es.insert_source_data(table_df, index2use)
     ##

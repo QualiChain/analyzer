@@ -1,14 +1,12 @@
 import logging
 import sys
 
-import numpy
 import pandas as pd
 from flask import Flask, request
 from flask_restful import Api, Resource
 
-from clients.elastic_client import ElasticClient
-from clients.rdbms_client import RDBMSClient
-from utils import check_input_data, check_source, df_lookup, replace_nan_in_files, test_pipeline
+from settings import RDBMS_TYPES
+from utils import check_input_data, test_pipeline, rdbms_check_if_uri_is_valid, test_rdbms_pipeline
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -32,29 +30,26 @@ class ReceiveDataSource(Resource):
         if data_format:
             log.info('Data Formatted correctly')
 
-            _check = check_source(
-                input_uri=data['uri'],
-                type=data['type'],
-                part=data['part']
-            )
-            if _check:
-                response_msg = {'message': 'Data Source send for processing'}
+            TYPE = data['type']
+            index2use = data['index']
+            if TYPE in RDBMS_TYPES:
 
-                index2use = data['index']
+                _check = rdbms_check_if_uri_is_valid(
+                    input_uri=data['uri'],
+                    part=data['part']
+                )
+                if _check:
+                    test_rdbms_pipeline(
+                        input_uri=data['uri'],
+                        part=data['part'],
+                        index2use=index2use
+                    )
+                    response_msg = {'message': 'Data Source send for processing'}
+                    return response_msg, 201
+                else:
+                    response_msg = {'message': 'Invalid Data Source'}
+                    return response_msg, 400
 
-                ## for testing purposes , later in async way
-
-                rdbms = RDBMSClient(data['uri'])
-                table_df = rdbms.load_table(data['part'])
-                input_types = df_lookup(table_df)
-
-                es = ElasticClient()
-                es.create_index(index=index2use, properties=input_types)
-
-                es.insert_source_data(table_df, index2use)
-                ##
-
-                return response_msg, 201
             else:
                 response_msg = {'message': 'Invalid Data Source'}
                 return response_msg, 400
