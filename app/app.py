@@ -5,6 +5,7 @@ import pandas as pd
 from flask import Flask, request
 from flask_restful import Api, Resource
 
+from clients.rdbms_client import RDBMSClient
 from utils import check_input_data, check_source
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
@@ -36,6 +37,11 @@ class ReceiveDataSource(Resource):
             )
             if _check:
                 response_msg = {'message': 'Data Source send for processing'}
+
+                rdbms = RDBMSClient(data['uri'])
+                table_df = rdbms.load_table(data['part'])
+                print(table_df.dtypes)
+
                 return response_msg, 201
             else:
                 response_msg = {'message': 'Invalid Data Source'}

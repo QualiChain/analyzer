@@ -1,3 +1,4 @@
+import numpy as np
 from sqlalchemy import create_engine
 
 from settings import RDBMS_TYPES
@@ -60,3 +61,41 @@ def check_source(input_uri, type, part):
         # TBD
         _check = False
     return _check
+
+
+def map_dtype_to_elk_type(df_type):
+    """
+    This function is used to map data frame types to elastic search types
+    Args:
+        df_type: provided type
+
+    Returns: elastic search data type
+
+    """
+    if df_type == np.int64:
+        return_type = 'integer'
+    elif df_type == np.float64:
+        return_type = 'float'
+    elif df_type == np.object:
+        return_type = 'text'
+    elif df_type == np.bool:
+        return_type = 'text'
+    elif df_type == np.datetime:
+        return_type = 'date'
+    return return_type
+
+
+def df_lookup(data_frame):
+    """
+    This function is used to find data frame types
+
+    Args:
+        data_frame: provided data frame
+
+    Returns: processed data frame
+
+    """
+    data_frame_types = data_frame.dtypes
+    type_items = data_frame_types.items()
+    transformed_types = dict(map(lambda element: (element[0], map_dtype_to_elk_type(element[1])), type_items))
+    return transformed_types
