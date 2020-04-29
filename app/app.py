@@ -39,14 +39,16 @@ class ReceiveDataSource(Resource):
             if _check:
                 response_msg = {'message': 'Data Source send for processing'}
 
-                ## test, later in async way
+                ## for testing purposes , later in async way
 
                 rdbms = RDBMSClient(data['uri'])
                 table_df = rdbms.load_table(data['part'])
                 input_types = df_lookup(table_df)
-                print(input_types)
+
                 es = ElasticClient()
-                es.create_index(index='my_index', properties = input_types)
+                es.create_index(index='my_index', properties=input_types)
+
+                es.insert_source_data(table_df, 'my_index')
 
                 return response_msg, 201
             else:

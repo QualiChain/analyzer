@@ -1,4 +1,5 @@
 from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
 
 from settings import ELASTIC_HOSTNAME, ELASTIC_PORT
 
@@ -28,5 +29,18 @@ class ElasticClient(object):
         index_body = {
             "mappings": index_properties
         }
-        print(index_body)
         self.es_obj.indices.create(index=index, body=index_body, ignore=400)
+
+    def insert_source_data(self, data_frame, index):
+        """
+        This function is used to take data frame's records and inserts them to provided index
+        Args:
+            data_frame: pandas data frame
+            index: provided index
+
+        Returns: None
+
+        """
+        df_documents = data_frame.to_dict(orient='records')
+        bulk(self.es_obj, df_documents, index=index, raise_on_error=True)
+
