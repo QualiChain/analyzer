@@ -1,6 +1,7 @@
 import numpy as np
 from sqlalchemy import create_engine
 
+from clients.elastic_client import ElasticClient
 from settings import RDBMS_TYPES
 
 
@@ -113,3 +114,14 @@ def replace_nan_in_files(data_frame):
     """
     df_without_nan = data_frame.replace(np.nan, '', regex=True)
     return df_without_nan
+
+
+def test_pipeline(file_df, index2use):
+    ## for testing purposes , later in async way
+    csv_without_nan = replace_nan_in_files(file_df)
+    input_types = df_lookup(csv_without_nan)
+
+    es = ElasticClient()
+    es.create_index(index=index2use, properties=input_types)
+    es.insert_source_data(csv_without_nan, index2use)
+    ##

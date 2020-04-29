@@ -7,6 +7,7 @@ AnalEyeZer is a component used in Qualichain H2020
     + PostgreSQL
 + Files
   + CSV
+  + TSV
 
 
 ### Setup ElasticSearch and Kibana
