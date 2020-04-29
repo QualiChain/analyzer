@@ -1,3 +1,4 @@
+import pandas
 import pandas as pd
 from elasticsearch.helpers import bulk
 from numpy import int64
@@ -29,4 +30,8 @@ part = 'empDetails'
 mongo_uri = 'mongodb://my_user:password123@localhost:27017/my_database'
 
 m = MongoDBConnector(part)
-print(m.check_if_uri_is_valid(uri=mongo_uri))
+res = m.check_if_uri_is_valid(uri=mongo_uri)
+if res:
+
+    data = pandas.DataFrame(list(m.collection.find()))
+    print(data.head())

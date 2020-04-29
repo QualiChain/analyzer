@@ -1,3 +1,4 @@
+import pandas as pd
 from pymongo import MongoClient
 
 
@@ -34,3 +35,16 @@ class MongoDBConnector(object):
 
         except Exception as ex:
             return False
+
+    def load_collection(self):
+        """
+        This function is used to transform mongoDB collection to pandas dataframe
+
+        Returns: pandas dataframe
+
+        """
+
+        collection_data = self.collection.find()
+        data_list = list(collection_data)
+        data = pd.DataFrame(data_list)
+        return data

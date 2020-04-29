@@ -5,8 +5,9 @@ import pandas as pd
 from flask import Flask, request
 from flask_restful import Api, Resource
 
+from clients.mongo_connector import MongoDBConnector
 from settings import RDBMS_TYPES
-from utils import check_input_data, test_pipeline, rdbms_check_if_uri_is_valid, test_rdbms_pipeline
+from utils import check_input_data, test_pipeline, rdbms_check_if_uri_is_valid, test_rdbms_pipeline, test_mongo_pipeline
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -32,18 +33,35 @@ class ReceiveDataSource(Resource):
 
             TYPE = data['type']
             index2use = data['index']
+            part = data['part']
+            uri = data['uri']
+
             if TYPE in RDBMS_TYPES:
 
                 _check = rdbms_check_if_uri_is_valid(
-                    input_uri=data['uri'],
-                    part=data['part']
+                    input_uri=uri,
+                    part=part
                 )
                 if _check:
                     test_rdbms_pipeline(
-                        input_uri=data['uri'],
-                        part=data['part'],
+                        input_uri=uri,
+                        part=part,
                         index2use=index2use
                     )
+                    response_msg = {'message': 'Data Source send for processing'}
+                    return response_msg, 201
+                else:
+                    response_msg = {'message': 'Invalid Data Source'}
+                    return response_msg, 400
+
+            elif TYPE == 'MONGODB':
+
+                mongo_client = MongoDBConnector(part)
+                _check = mongo_client.check_if_uri_is_valid(uri)
+
+                if _check:
+                    mongodb_data = mongo_client.load_collection()
+                    test_mongo_pipeline(mongodb_data, index2use)
                     response_msg = {'message': 'Data Source send for processing'}
                     return response_msg, 201
                 else:
