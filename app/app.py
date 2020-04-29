@@ -1,13 +1,14 @@
 import logging
 import sys
 
+import numpy
 import pandas as pd
 from flask import Flask, request
 from flask_restful import Api, Resource
 
 from clients.elastic_client import ElasticClient
 from clients.rdbms_client import RDBMSClient
-from utils import check_input_data, check_source, df_lookup
+from utils import check_input_data, check_source, df_lookup, replace_nan_in_files
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -64,11 +65,31 @@ class ReceiveDataSource(Resource):
 
 
 class ReceiveCSVFiles(Resource):
+    """
+    This Python Object is used to receive the provided CSV file and load it to ElasticSearch
+    """
 
     def post(self):
-        file = request.files['file']
-        data = pd.read_csv(file, header=None)
-        print(data.iloc[0].loc[1])
+        try:
+            file = request.files['file']
+            index2use = request.form['index']
+
+            csv_df = pd.read_csv(file)
+
+            ## for testing purposes , later in async way
+            csv_without_nan = replace_nan_in_files(csv_df)
+            input_types = df_lookup(csv_without_nan)
+
+            es = ElasticClient()
+            es.create_index(index=index2use, properties=input_types)
+            es.insert_source_data(csv_without_nan, index2use)
+            ##
+
+            response_msg = {'message': 'CSV File received for processing'}
+            return response_msg, 201
+        except Exception as ex:
+            log.error(ex)
+            return ex, 400
 
 
 # Routes

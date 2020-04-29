@@ -99,3 +99,17 @@ def df_lookup(data_frame):
     type_items = data_frame_types.items()
     transformed_types = dict(map(lambda element: (element[0], map_dtype_to_elk_type(element[1])), type_items))
     return transformed_types
+
+
+def replace_nan_in_files(data_frame):
+    """
+    This function is used to remove NaN in provided files
+
+    Args:
+        data_frame: data frame
+
+    Returns: dataframe without NaN
+
+    """
+    df_without_nan = data_frame.replace(np.nan, '', regex=True)
+    return df_without_nan
