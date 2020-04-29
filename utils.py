@@ -14,7 +14,7 @@ def check_input_data(data):
     Returns: True or false
 
     """
-    if 'uri' in data.keys() and 'type' in data.keys() and 'part' in data.keys():
+    if 'uri' in data.keys() and 'type' in data.keys() and 'part' in data.keys() and 'index' in data.keys():
         return True
     else:
         return False
