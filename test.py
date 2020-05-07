@@ -52,6 +52,7 @@ should = [
         "slop": 2}
     }
 ]
+params = {'index': 'my_index', 'min_score': 4, '_source': ["id"], "should":should}
 
 results = client.bool_queries(index='my_index', min_score=4, _source=["id"], should=should)
 print(results)

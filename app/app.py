@@ -5,6 +5,7 @@ import pandas as pd
 from flask import Flask, request
 from flask_restful import Api, Resource
 
+from clients.elastic_client import ElasticClient
 from clients.mongo_connector import MongoDBConnector
 from settings import RDBMS_TYPES
 from utils import check_input_data, test_pipeline, rdbms_check_if_uri_is_valid, test_rdbms_pipeline, test_mongo_pipeline
@@ -114,6 +115,25 @@ class ReceiveFiles(Resource):
             return ex, 400
 
 
+class AskStorage(Resource):
+    """This Python Object is used to POST some queries against ElasticSearch"""
+
+    def post(self):
+        """Post data and transfer them to ElasticSearch"""
+        try:
+            params = request.get_json()
+
+            client = ElasticClient()
+            results = client.bool_queries(**params)
+            total_hits = results['hits']['hits']
+            return total_hits, 201
+
+        except Exception as ex:
+            log.error(ex)
+            return ex, 400
+
+
 # Routes
 api.add_resource(ReceiveDataSource, '/receive/source')
 api.add_resource(ReceiveFiles, '/upload/file')
+api.add_resource(AskStorage, '/ask/storage')
