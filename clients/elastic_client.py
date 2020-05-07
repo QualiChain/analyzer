@@ -44,6 +44,18 @@ class ElasticClient(object):
         df_documents = data_frame.to_dict(orient='records')
         bulk(self.es_obj, df_documents, index=index, raise_on_error=True)
 
+    def choose_query(self, params):
+        query_type = params['query']
+
+        if query_type == 'bool_query':
+            results = self.bool_queries(**params)
+            response = results['hits']['hits'], 201
+        else:
+            response = {'message': 'Query: ({}) not supported'.format(query_type)}, 400
+
+        return response
+
+
     def bool_queries(self, index, min_score=3, _source=[], **kwargs):
         """
         This function is used to execute boolean queries in elasticsearch
