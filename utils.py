@@ -1,3 +1,5 @@
+import re
+
 import numpy as np
 from sqlalchemy import create_engine
 
@@ -94,6 +96,22 @@ def replace_nan_in_files(data_frame):
     """
     df_without_nan = data_frame.replace(np.nan, '', regex=True)
     return df_without_nan
+
+
+def split_camel_case(input_string):
+    """
+    This function is used to transform camel case words to more words
+
+    Args:
+        input_string: camel case string
+
+    Returns: Extracted words from camel case
+
+    """
+    splitted = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', input_string)).split()
+    joined_string = " ".join(splitted)
+    return joined_string
+
 
 
 def test_pipeline(file_df, index2use):
