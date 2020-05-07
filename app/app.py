@@ -122,11 +122,15 @@ class AskStorage(Resource):
         """Post data and transfer them to ElasticSearch"""
         try:
             params = request.get_json()
-
+            query_type = params['query']
             client = ElasticClient()
-            results = client.bool_queries(**params)
-            total_hits = results['hits']['hits']
-            return total_hits, 201
+
+            if query_type == 'bool_query':
+                results = client.bool_queries(**params)
+                total_hits = results['hits']['hits']
+                return total_hits, 201
+            else:
+                return {'message': 'Query: {} not supported'.format(query_type)}, 400
 
         except Exception as ex:
             log.error(ex)

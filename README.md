@@ -47,6 +47,7 @@ Host: 127.0.0.1:5000
 Content-Type: application/json
 
 {
+	"query":"bool_query",
 	"index": "my_index",
 	"min_score": 4,
 	"_source": ["id"],
