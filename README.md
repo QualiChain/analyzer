@@ -39,3 +39,30 @@ Content-Type: application/json
 	"index": "my_index"
 }
 ```
+
+**Submit Query to ElasticSearch**
+```http request
+POST /ask/storage HTTP/1.1
+Host: 127.0.0.1:5000
+Content-Type: application/json
+
+{
+	"index": "my_index",
+	"min_score": 4,
+	"_source": ["id"],
+	"should": [
+    {"multi_match": {
+        "query": "backend engineer",
+        "fields": ["title", "requirements"],
+        "type": "phrase",
+        "slop": 2}
+    },
+    {"multi_match": {
+        "query": "backend developer",
+        "fields": ["title", "requirements"],
+        "type": "phrase",
+        "slop": 2}
+    }
+]
+}
+```
