@@ -25,13 +25,33 @@ from utils import map_dtype_to_elk_type, df_lookup
 #
 # # print(table_df.name)
 # # print(df_lookup(table_df))
-part = 'empDetails'
+# part = 'empDetails'
+#
+# mongo_uri = 'mongodb://my_user:password123@localhost:27017/my_database'
+#
+# m = MongoDBConnector(part)
+# res = m.check_if_uri_is_valid(uri=mongo_uri)
+# if res:
+#
+#     data = pandas.DataFrame(list(m.collection.find()))
+#     print(data.head())
 
-mongo_uri = 'mongodb://my_user:password123@localhost:27017/my_database'
+client = ElasticClient()
 
-m = MongoDBConnector(part)
-res = m.check_if_uri_is_valid(uri=mongo_uri)
-if res:
+should = [
+    {"multi_match": {
+        "query": "backend engineer",
+        "fields": ["title", "requirements"],
+        "type": "phrase",
+        "slop": 2}
+    },
+    {"multi_match": {
+        "query": "backend developer",
+        "fields": ["title", "requirements"],
+        "type": "phrase",
+        "slop": 2}
+    }
+]
 
-    data = pandas.DataFrame(list(m.collection.find()))
-    print(data.head())
+results = client.bool_queries(index='my_index', min_score=4, _source=["id"], should=should)
+print(results)

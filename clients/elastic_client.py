@@ -1,7 +1,7 @@
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
-from settings import ELASTIC_HOSTNAME, ELASTIC_PORT
+from settings import ELASTIC_HOSTNAME, ELASTIC_PORT, HITS_SIZE
 
 
 class ElasticClient(object):
@@ -44,3 +44,34 @@ class ElasticClient(object):
         df_documents = data_frame.to_dict(orient='records')
         bulk(self.es_obj, df_documents, index=index, raise_on_error=True)
 
+    def bool_queries(self, index, min_score=3, _source=[], **kwargs):
+        """
+        This function is used to execute boolean queries in elasticsearch
+
+        Args:
+            index: index to search for documents
+            min_score: min score
+            _source: returned fields
+            **kwargs: provided kwargs
+
+        Returns: elasticsearch results
+
+        """
+
+        should = kwargs['should'] if 'should' in kwargs.keys() else []
+        must = kwargs['must'] if 'must' in kwargs.keys() else []
+        must_not = kwargs['must_not'] if 'must_not' in kwargs.keys() else []
+
+        body = {
+            "_source": _source,
+            "min_score": min_score,
+            "query": {
+                "bool": {
+                    "should": should,
+                    "must": must,
+                    "must_not": must_not
+                }
+            }
+        }
+        results = self.es_obj.search(index=index, body=body, size=HITS_SIZE)
+        return results
