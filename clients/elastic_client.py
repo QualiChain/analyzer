@@ -45,11 +45,22 @@ class ElasticClient(object):
         bulk(self.es_obj, df_documents, index=index, raise_on_error=True)
 
     def choose_query(self, params):
+        """
+        This function is used to choose which elasticsearch function will be executed
+
+        Args:
+            params: provided request parameters
+
+        Returns: elastic search reasults
+
+        """
         query_type = params['query']
 
         if query_type == 'bool_query':
+
             results = self.bool_queries(**params)
             response = results['hits']['hits'], 201
+
         else:
             response = {'message': 'Query: ({}) not supported'.format(query_type)}, 400
 
