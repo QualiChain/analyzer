@@ -7,8 +7,9 @@ from flask_restful import Api, Resource
 
 from clients.elastic_client import ElasticClient
 from clients.mongo_connector import MongoDBConnector
+from pipelines.data_pipeline import DataPipeline
 from settings import RDBMS_TYPES
-from utils import check_input_data, test_pipeline, rdbms_check_if_uri_is_valid, test_rdbms_pipeline, test_mongo_pipeline
+from utils import check_input_data, test_pipeline, rdbms_check_if_uri_is_valid
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -37,6 +38,8 @@ class ReceiveDataSource(Resource):
             part = data['part']
             uri = data['uri']
 
+            pipe = DataPipeline(index2use=index2use)
+
             if TYPE in RDBMS_TYPES:
 
                 _check = rdbms_check_if_uri_is_valid(
@@ -44,10 +47,10 @@ class ReceiveDataSource(Resource):
                     part=part
                 )
                 if _check:
-                    test_rdbms_pipeline(
+                    pipe.execute(
+                        input_type='RDBMS',
                         input_uri=uri,
-                        part=part,
-                        index2use=index2use
+                        part=part
                     )
                     response_msg = {'message': 'Data Source send for processing'}
                     return response_msg, 201
@@ -62,7 +65,11 @@ class ReceiveDataSource(Resource):
 
                 if _check:
                     mongodb_data = mongo_client.load_collection()
-                    test_mongo_pipeline(mongodb_data, index2use)
+                    pipe.execute(
+                        input_type='MONGODB',
+                        data_frame=mongodb_data
+                    )
+
                     response_msg = {'message': 'Data Source send for processing'}
                     return response_msg, 201
                 else:
@@ -91,10 +98,16 @@ class ReceiveFiles(Resource):
             index2use = request.form['index']
             file_type = request.form['type']
 
+            pipe = DataPipeline(index2use=index2use)
+
             if file_type == 'csv':
 
                 file_df = pd.read_csv(file)
-                test_pipeline(file_df, index2use)
+                input_type = 'CSV'
+                pipe.execute(
+                    input_type=input_type,
+                    data_frame=file_df
+                )
 
                 response_msg = {'message': 'CSV File received for processing'}
                 return response_msg, 201
@@ -102,7 +115,11 @@ class ReceiveFiles(Resource):
             elif file_type == 'tsv':
 
                 file_df = pd.read_csv(file, sep='\t')
-                test_pipeline(file_df, index2use)
+                input_type = 'TSV'
+                pipe.execute(
+                    input_type=input_type,
+                    data_frame=file_df
+                )
 
                 response_msg = {'message': 'TSV File received for processing'}
                 return response_msg, 201
