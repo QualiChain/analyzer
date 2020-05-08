@@ -3,9 +3,6 @@ import re
 import numpy as np
 from sqlalchemy import create_engine
 
-from clients.elastic_client import ElasticClient
-from clients.rdbms_client import RDBMSClient
-
 
 def check_input_data(data):
     """
