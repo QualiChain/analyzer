@@ -123,27 +123,3 @@ def test_pipeline(file_df, index2use):
     es.create_index(index=index2use, properties=input_types)
     es.insert_source_data(csv_without_nan, index2use)
     ##
-
-
-def test_rdbms_pipeline(input_uri, part, index2use):
-    ## for testing purposes , later in async way
-
-    rdbms = RDBMSClient(input_uri)
-    table_df = rdbms.load_table(part)
-    input_types = df_lookup(table_df)
-
-    es = ElasticClient()
-    es.create_index(index=index2use, properties=input_types)
-
-    es.insert_source_data(table_df, index2use)
-    ##
-
-
-def test_mongo_pipeline(data_frame, index2use):
-    ## for testing purposes , later in async way
-    input_types = df_lookup(data_frame)
-
-    es = ElasticClient()
-    es.create_index(index=index2use, properties=input_types)
-
-    es.insert_source_data(data_frame, index2use)

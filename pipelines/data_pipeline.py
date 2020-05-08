@@ -1,3 +1,5 @@
+import pandas as pd
+
 from clients.elastic_client import ElasticClient
 from clients.rdbms_client import RDBMSClient
 from utils import replace_nan_in_files, df_lookup
@@ -27,19 +29,18 @@ class DataPipeline(object):
 
             rdbms = RDBMSClient(input_uri)
             provided_data = rdbms.load_table(part)
-            return provided_data
 
         elif input_type == 'TSV' or input_type == 'CSV':
             file_df = kwargs['data_frame']
             provided_data = replace_nan_in_files(file_df)
-            return provided_data
 
         elif input_type == 'MONGODB':
             provided_data = kwargs['data_frame']
-            return provided_data
+
         else:
-            print('Provided input {} is not supported'.format(input_type))
-            return None
+            print('Provided input {} is not supported'.format(input_type), flush=True)
+            provided_data = pd.DataFrame()
+        return provided_data
 
     def append_to_elastic_search(self, data):
         """
@@ -59,6 +60,8 @@ class DataPipeline(object):
         """This function is used to execute the above functions"""
         data = self.process_input(input_type, **kwargs)
 
-        if data:
+        if not data.empty:
             self.append_to_elastic_search(data=data)
-            print('Data stored to ElasticSearch')
+            print('Data stored to ElasticSearch', flush=True)
+        else:
+            print("Empty Data", flush=True)
