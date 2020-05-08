@@ -66,7 +66,6 @@ class ElasticClient(object):
 
         return response
 
-
     def bool_queries(self, index, min_score=3, _source=[], **kwargs):
         """
         This function is used to execute boolean queries in elasticsearch
