@@ -111,15 +111,3 @@ def split_camel_case(input_string):
     splitted = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', input_string)).split()
     joined_string = " ".join(splitted)
     return joined_string
-
-
-
-def test_pipeline(file_df, index2use):
-    ## for testing purposes , later in async way
-    csv_without_nan = replace_nan_in_files(file_df)
-    input_types = df_lookup(csv_without_nan)
-
-    es = ElasticClient()
-    es.create_index(index=index2use, properties=input_types)
-    es.insert_source_data(csv_without_nan, index2use)
-    ##
