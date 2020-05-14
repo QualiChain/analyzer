@@ -37,10 +37,9 @@ In order to run all Analyezer Components at once you should run the following
 
 This command creates the following
 
-+ one ElasticSearch node
-+ Kibana
-+ AnalEyeZer
-
++ one ElasticSearch node is accessible in port `9200`
++ Kibana is accessible in port `5601` 
++ AnalEyeZer is accessible in port `5000`
 ### Examples
 
 **Submit a new data source**
