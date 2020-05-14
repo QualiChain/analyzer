@@ -23,6 +23,24 @@ AnalEyeZer is a component used in Qualichain H2020
 + `pip install -r requirements.txt`
 + `flask run`
 
+### Run AnalEyEZer using Docker
+
+In order to run AnalEyeZer using Docker you should run the following command
+
+`docker-compose up -d analeyzer --build`
+
+### Run Analyezer Stack
+
+In order to run all Analyezer Components at once you should run the following
+
+`docker-compose up -d --build`
+
+This command creates the following
+
++ one ElasticSearch node
++ Kibana
++ AnalEyeZer
+
 ### Examples
 
 **Submit a new data source**
