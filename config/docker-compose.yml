@@ -53,6 +53,7 @@ services:
       dockerfile: config/Dockerfile
     environment:
       ELASTIC_HOSTNAME: ${ELASTICSEARCH_HOSTNAME}
+      KIBANA_HOSTNAME: ${KIBANA_HOSTNAME}
       ELASTIC_PORT: ${ELASTICSEARCH_PORT}
       API_PORT: ${API_PORT}
     networks:
