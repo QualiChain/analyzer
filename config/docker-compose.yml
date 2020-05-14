@@ -44,3 +44,21 @@ services:
     depends_on:
       - es01
 
+  analyezer:
+    container_name: ${API_HOSTNAME}
+    hostname: ${API_HOSTNAME}
+    restart: always
+    build:
+      context: ".."
+      dockerfile: config/Dockerfile
+    environment:
+      ELASTIC_HOSTNAME: ${ELASTICSEARCH_HOSTNAME}
+      ELASTIC_PORT: ${ELASTICSEARCH_PORT}
+      API_PORT: ${API_PORT}
+    networks:
+      - analeyezer
+    ports:
+    - 5002:5000
+    depends_on:
+      - kibana
+
