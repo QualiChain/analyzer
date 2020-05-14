@@ -51,7 +51,7 @@ class ElasticClient(object):
         Args:
             params: provided request parameters
 
-        Returns: elastic search reasults
+        Returns: elastic search results
 
         """
         query_type = params['query']
@@ -61,10 +61,57 @@ class ElasticClient(object):
             results = self.bool_queries(**params)
             response = results['hits']['hits'], 201
 
+        elif query_type == 'list_documents':
+
+            results = self.list_documents(**params)
+            response = results['hits']['hits'], 201
+
+        elif query_type == 'get_document':
+            results = self.get_document(**params)
+            response = results, 201
+
+        elif query_type == 'mget_documents':
+            results = self.mget_docs(**params)
+            response = {'docs': [_doc['_source'] for _doc in results['docs']]}, 201
+
+        elif query_type == 'cat_indices':
+            results = self.cat_indices()
+            response = {'stored_indices': results}, 201
+
+        elif query_type == 'get_index':
+            results = self.get_index(**params)
+            return results
+
         else:
             response = {'message': 'Query: ({}) not supported'.format(query_type)}, 400
 
         return response
+
+    def cat_indices(self, **kwargs):
+        """
+        This function is used to retrieve all stored indices
+
+        Returns: stored indices
+
+        """
+        indices = list(
+            self.es_obj.indices.get_alias("*")
+        )
+        return indices
+
+    def get_index(self, index, **kwargs):
+        """
+        This function is used to return info and mappings about provided index
+
+        Args:
+            index: provided index
+            **kwargs: provided kwargs
+
+        Returns: index info
+
+        """
+        index_info = self.es_obj.indices.get(index=index)
+        return index_info
 
     def bool_queries(self, index, min_score=3, _source=[], **kwargs):
         """
@@ -96,4 +143,58 @@ class ElasticClient(object):
             }
         }
         results = self.es_obj.search(index=index, body=body, size=HITS_SIZE)
+        return results
+
+    def list_documents(self, index, _source=[], **kwargs):
+        """
+        The following function is used to retrieve stored documents on specific index
+
+        Args:
+            index: provided index
+            _source: document fields to return
+
+        Returns: stored documents
+
+        """
+        body = {
+            "query": {
+                "match_all": {}
+            }
+        }
+        results = self.es_obj.search(index=index, body=body, size=HITS_SIZE)
+        return results
+
+    def get_document(self, index, id, _source=[], **kwargs):
+        """
+        This function is used to retrieve specific information for provided index
+
+        Args:
+            index: provided index
+            id: document id
+            _source: document fields to return
+            **kwargs: provided kwargs
+
+        Returns: specific document
+
+        """
+        document = self.es_obj.get_source(index=index, id=str(id))
+        return document
+
+    def mget_docs(self, index, ids, _source=[], **kwargs):
+        """
+        This function is used to retrieve multiple documents using their IDs
+
+        Args:
+            index: provided Index
+            ids: provided IDs
+            _source: document fields to return
+            **kwargs: provided kwargs
+
+        Returns: elk documents
+
+        """
+        results = self.es_obj.mget(
+            index=index,
+            body={'ids': ids}
+        )
         return results

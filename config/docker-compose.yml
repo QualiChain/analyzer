@@ -27,8 +27,8 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     networks:
       - config_qmediator
-    ports:
-      - ${ELASTICSEARCH_PORT}:9200
+#    ports:
+#      - ${ELASTICSEARCH_PORT}:9200
 
   kibana:
     image: ${KIBANA_IMAGE}
