@@ -5,8 +5,8 @@ volumes:
     driver: local
 
 networks:
-  analeyezer:
-    driver: bridge
+  config_qmediator:
+    external: true
 
 services:
 
@@ -26,7 +26,7 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     networks:
-      analeyezer:
+      - config_qmediator
     ports:
       - ${ELASTICSEARCH_PORT}:9200
 
@@ -38,7 +38,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://${ELASTICSEARCH_HOSTNAME}:9200
     networks:
-      - analeyezer
+      - config_qmediator
     ports:
       - ${KIBANA_PORT}:5601
     depends_on:
@@ -57,7 +57,7 @@ services:
       ELASTIC_PORT: ${ELASTICSEARCH_PORT}
       API_PORT: ${API_PORT}
     networks:
-      - analeyezer
+      - config_qmediator
     ports:
     - 5002:5000
     depends_on:
