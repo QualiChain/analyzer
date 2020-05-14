@@ -39,8 +39,8 @@ services:
       - ELASTICSEARCH_HOSTS=http://${ELASTICSEARCH_HOSTNAME}:9200
     networks:
       - config_qmediator
-    ports:
-      - ${KIBANA_PORT}:5601
+#    ports:
+#      - ${KIBANA_PORT}:5601
     depends_on:
       - es01
 
