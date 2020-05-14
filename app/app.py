@@ -9,7 +9,7 @@ from clients.elastic_client import ElasticClient
 from clients.mongo_connector import MongoDBConnector
 from pipelines.data_pipeline import DataPipeline
 from settings import RDBMS_TYPES
-from utils import check_input_data, test_pipeline, rdbms_check_if_uri_is_valid
+from utils import check_input_data, rdbms_check_if_uri_is_valid
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
