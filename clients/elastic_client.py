@@ -61,6 +61,11 @@ class ElasticClient(object):
             results = self.bool_queries(**params)
             response = results['hits']['hits'], 201
 
+        elif query_type == 'match_documents':
+
+            results = self.match_documents(**params)
+            response = results['hits']['hits'], 201
+
         elif query_type == 'list_documents':
 
             results = self.list_documents(**params)
@@ -139,6 +144,33 @@ class ElasticClient(object):
                     "should": should,
                     "must": must,
                     "must_not": must_not
+                }
+            }
+        }
+        results = self.es_obj.search(index=index, body=body, size=HITS_SIZE)
+        return results
+
+    def match_documents(self, index, _source=[], **kwargs):
+        """
+        This function is used to perform match queries against stored documents that belong to
+        provided Index
+
+        Args:
+            index: provided index
+            _source: provided source
+            **kwargs: provided kwargs
+
+        Returns: documents that match search term
+
+        """
+        term = kwargs["term"]
+        fields = kwargs["fields"]
+
+        body = {
+            "query": {
+                "multi_match": {
+                    "query": term,
+                    "fields": fields
                 }
             }
         }
