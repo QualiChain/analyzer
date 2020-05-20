@@ -13,6 +13,11 @@ class ElasticClient(object):
             'port': ELASTIC_PORT
         }])  # Initialize ElasticSearch Connection
 
+    def get_aggregations(self, results):
+        """This function is used when aggregation functionalities are requested"""
+        aggregations = results['aggregations']
+        return aggregations
+
     def create_index(self, index, **kwargs):
         """
         This function is used to create index using provided kwargs for index properties
@@ -59,12 +64,20 @@ class ElasticClient(object):
         if query_type == 'bool_query':
 
             results = self.bool_queries(**params)
-            response = results['hits']['hits'], 201
+
+            if "aggs" in params.keys():
+                response = self.get_aggregations(results), 201
+            else:
+                response = results['hits']['hits'], 201
 
         elif query_type == 'match_documents':
 
             results = self.match_documents(**params)
-            response = results['hits']['hits'], 201
+
+            if "aggs" in params.keys():
+                response = self.get_aggregations(results), 201
+            else:
+                response = results['hits']['hits'], 201
 
         elif query_type == 'list_documents':
 
