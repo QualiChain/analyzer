@@ -118,7 +118,7 @@ class ElasticClient(object):
         index_info = self.es_obj.indices.get(index=index)
         return index_info
 
-    def bool_queries(self, index, min_score=3, _source=[], **kwargs):
+    def bool_queries(self, index, min_score=3, _source=[], size=HITS_SIZE, **kwargs):
         """
         This function is used to execute boolean queries in elasticsearch
 
@@ -151,10 +151,10 @@ class ElasticClient(object):
         if 'aggs' in kwargs.keys():
             body['aggs'] = kwargs['aggs']
 
-        results = self.es_obj.search(index=index, body=body, size=HITS_SIZE)
+        results = self.es_obj.search(index=index, body=body, size=size)
         return results
 
-    def match_documents(self, index, _source=[], **kwargs):
+    def match_documents(self, index, _source=[], size=HITS_SIZE, **kwargs):
         """
         This function is used to perform match queries against stored documents that belong to
         provided Index
@@ -182,7 +182,7 @@ class ElasticClient(object):
         if 'aggs' in kwargs.keys():
             body['aggs'] = kwargs['aggs']
 
-        results = self.es_obj.search(index=index, body=body, size=HITS_SIZE)
+        results = self.es_obj.search(index=index, body=body, size=size)
         return results
 
     def list_documents(self, index, _source=[], **kwargs):
