@@ -147,6 +147,10 @@ class ElasticClient(object):
                 }
             }
         }
+
+        if 'aggs' in kwargs.keys():
+            body['aggs'] = kwargs['aggs']
+
         results = self.es_obj.search(index=index, body=body, size=HITS_SIZE)
         return results
 
@@ -174,6 +178,10 @@ class ElasticClient(object):
                 }
             }
         }
+
+        if 'aggs' in kwargs.keys():
+            body['aggs'] = kwargs['aggs']
+
         results = self.es_obj.search(index=index, body=body, size=HITS_SIZE)
         return results
 
