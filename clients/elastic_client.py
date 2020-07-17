@@ -110,6 +110,14 @@ class ElasticClient(object):
             }
             self.create_index(index=new_index, **index_properties)
             response = {'msg': "Index: {} created".format(new_index)}, 201
+        elif query_type == 'create_document':
+            index = params['index']
+
+            del params['query']
+            del params['index']
+
+            self.create_document(index=index, **params)
+            response = {'msg': "Document created"}, 201
 
         else:
             response = {'message': 'Query: ({}) not supported'.format(query_type)}, 400
@@ -141,6 +149,11 @@ class ElasticClient(object):
         """
         index_info = self.es_obj.indices.get(index=index)
         return index_info
+
+    def create_document(self, index, **kwargs):
+        """This function is used to create a document to a specific index"""
+        body = kwargs
+        self.es_obj.index(index=index, body=body)
 
     def bool_queries(self, index, min_score=3, _source=[], size=HITS_SIZE, **kwargs):
         """
