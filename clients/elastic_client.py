@@ -119,6 +119,10 @@ class ElasticClient(object):
             self.create_document(index=index, **params)
             response = {'msg': "Document created"}, 201
 
+        elif query_type == 'delete_document':
+            index = params['index']
+            self.delete_document(index=index, id=params['id'])
+            response = {'msg': "Document: {} removed".format(params['id'])}, 201
         else:
             response = {'message': 'Query: ({}) not supported'.format(query_type)}, 400
 
@@ -260,6 +264,10 @@ class ElasticClient(object):
         """
         document = self.es_obj.get_source(index=index, id=str(id))
         return document
+
+    def delete_document(self, index, id):
+        """This function is used to delete a document"""
+        self.es_obj.delete(index=index, id=str(id))
 
     def mget_docs(self, index, ids, _source=[], **kwargs):
         """
