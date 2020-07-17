@@ -99,6 +99,17 @@ class ElasticClient(object):
         elif query_type == 'get_index':
             results = self.get_index(**params)
             return results
+        elif query_type == 'create_index':
+            new_index = params["index"]
+
+            del params['query']
+            del params['index']
+
+            index_properties = {
+                'properties': params
+            }
+            self.create_index(index=new_index, **index_properties)
+            response = {'msg': "Index: {} created".format(new_index)}, 201
 
         else:
             response = {'message': 'Query: ({}) not supported'.format(query_type)}, 400
