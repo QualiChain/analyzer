@@ -153,7 +153,11 @@ class ElasticClient(object):
     def create_document(self, index, **kwargs):
         """This function is used to create a document to a specific index"""
         body = kwargs
-        self.es_obj.index(index=index, body=body)
+        if 'id' in body.keys():
+            doc_id = body['id']
+        else:
+            doc_id = None
+        self.es_obj.index(index=index, body=body, id=doc_id)
 
     def bool_queries(self, index, min_score=3, _source=[], size=HITS_SIZE, **kwargs):
         """
