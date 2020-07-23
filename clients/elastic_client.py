@@ -120,9 +120,18 @@ class ElasticClient(object):
             response = {'msg': "Document created"}, 201
 
         elif query_type == 'delete_document':
+
             index = params['index']
             self.delete_document(index=index, id=params['id'])
             response = {'msg': "Document: {} removed".format(params['id'])}, 201
+        elif query_type == 'script_update':
+
+            index = params['index']
+            id = params['id']
+            body = params['body']
+
+            self.script_update(index=index, id=id, upscript=body)
+
         else:
             response = {'message': 'Query: ({}) not supported'.format(query_type)}, 400
 
@@ -287,3 +296,7 @@ class ElasticClient(object):
             body={'ids': ids}
         )
         return results
+
+    def script_update(self, index, id, upscript):
+        """This function is used to update a document using scripts"""
+        self.es_obj.update(index=index, id=id, body=upscript)

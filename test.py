@@ -36,23 +36,34 @@ from utils import map_dtype_to_elk_type, df_lookup
 #     data = pandas.DataFrame(list(m.collection.find()))
 #     print(data.head())
 
+upscript = {
+        "script": {
+            "source": "ctx._source.skills.add(params.tag)",
+            "lang": "painless",
+            "params": {
+                "tag": "elixir"
+            }
+        }
+}
+
 client = ElasticClient()
+client.es_obj.update(index="qc_index_temp", id='oXN4e3MBFv3_0b1IBNte', body="upscript")
 
-should = [
-    {"multi_match": {
-        "query": "backend engineer",
-        "fields": ["title", "requirements"],
-        "type": "phrase",
-        "slop": 2}
-    },
-    {"multi_match": {
-        "query": "backend developer",
-        "fields": ["title", "requirements"],
-        "type": "phrase",
-        "slop": 2}
-    }
-]
-params = {'index': 'my_index', 'min_score': 4, '_source': ["id"], "should":should}
-
-results = client.bool_queries(index='my_index', min_score=4, _source=["id"], should=should)
-print(results)
+# should = [
+#     {"multi_match": {
+#         "query": "backend engineer",
+#         "fields": ["title", "requirements"],
+#         "type": "phrase",
+#         "slop": 2}
+#     },
+#     {"multi_match": {
+#         "query": "backend developer",
+#         "fields": ["title", "requirements"],
+#         "type": "phrase",
+#         "slop": 2}
+#     }
+# ]
+# params = {'index': 'my_index', 'min_score': 4, '_source': ["id"], "should":should}
+#
+# results = client.bool_queries(index='my_index', min_score=4, _source=["id"], should=should)
+# print(results)
