@@ -131,6 +131,7 @@ class ElasticClient(object):
             body = params['body']
 
             self.script_update(index=index, id=id, upscript=body)
+            response = {'msg': "Document: {} updated".format(params['id'])}, 201
 
         else:
             response = {'message': 'Query: ({}) not supported'.format(query_type)}, 400
